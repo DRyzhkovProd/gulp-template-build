@@ -1,0 +1,8 @@
+body {
+  background: green;
+  .item {
+    background: #000;
+  }
+}
+
+@import "second";
