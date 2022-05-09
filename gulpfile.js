@@ -14,7 +14,7 @@ const ttf2woff2 = require('gulp-ttf2woff2')
 
 const pathImages = ['./src/img/**.jpg', './src/img/**.png', './src/img/**.jpeg']
 
-const styles = () =>  {
+const styles = () =>    {
     return src('./src/scss/**/*.scss')
         .pipe(sourcemaps.init())
         .pipe(sass.sync({
@@ -58,8 +58,10 @@ const assetsToBuild = () => {
 const fonts = () => {
   src('./src/fonts/**.ttf')
       .pipe(ttf2woff())
-      .pipe('./build/fonts')
-    return
+      .pipe(dest('./build/fonts'))
+    return src('./src/fonts/**.ttf')
+        .pipe(ttf2woff2())
+        .pipe(dest('./build/fonts'))
 }
 
 const svgToSprites = () => {
@@ -90,4 +92,4 @@ const watcher = () => {
 
 exports.watcher = watcher;
 exports.styles = styles;
-exports.default = series(htmlInclude, styles, imgToBuild, svgToSprites, assetsToBuild, watcher)
+exports.default = series(htmlInclude, fonts, styles, imgToBuild, svgToSprites, assetsToBuild, watcher)

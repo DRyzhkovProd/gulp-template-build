@@ -1,8 +1,7 @@
-body {
-  background: green;
-  .item {
-    background: #000;
-  }
-}
+@import "mixins";
+@import "fonts";
 
-@import "second";
+$font: 'RobotoFlex-Regular';
+h1 {
+  font-family: $font;
+}
