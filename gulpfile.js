@@ -74,7 +74,8 @@ const scriptsLoader = () => {
         .pipe(sourcemaps.init())
         .pipe(uglify().on('error', notify.onError()))
         .pipe(sourcemaps.write('.'))
-        .pipe(dest('./'))
+        .pipe(dest('./build/js'))
+        .pipe(browserSync.stream())
 }
 const imgToBuild = () => {
     return src(pathImages)
@@ -121,8 +122,9 @@ const watcher = () => {
     watch(pathImages, imgToBuild);
     watch('./src/img/**.svg', svgToSprites);
     watch('./src/assets/**', assetsToBuild);
+    watch('./src/js/**/*.js', scriptsLoader);
 }
 
 exports.watcher = watcher;
 exports.styles = styles;
-exports.default = series(cleaner, parallel(htmlInclude, fonts, imgToBuild, svgToSprites, assetsToBuild), styles, watcher)
+exports.default = series(cleaner, parallel(htmlInclude, scriptsLoader, fonts, imgToBuild, svgToSprites, assetsToBuild), styles, watcher)
