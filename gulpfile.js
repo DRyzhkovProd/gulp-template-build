@@ -10,21 +10,28 @@ const fileInclude = require('gulp-file-include');
 const svgSprite = require('gulp-svg-sprite');
 const ttf2woff = require('gulp-ttf2woff');
 const ttf2woff2 = require('gulp-ttf2woff2');
-const webpack = require('webpack');
+const plumber = require('gulp-plumber');
 const webpackStream = require('webpack-stream');
 const uglify = require('gulp-uglify-es').default;
-
 const del = require('del');
 
-const pathImages = ['./src/img/**.jpg', './src/img/**.png', './src/img/**.jpeg']
 
-const styles = () =>    {
-    return src('./src/scss/**/*.scss')
+// folders
+const source = './src';
+const build = './build';
+
+const pathImages = [`${source}/img/**.jpg`, `${source}/img/**.png`, `${source}/img/**.jpeg`]
+
+const styles = () => {
+    return src(`${source}/scss/**/*.scss`)
         .pipe(sourcemaps.init())
         .pipe(sass.sync({
             outputStyle: 'expanded'
-        }).on('error', notify.onError()))
-        // add  suffix '.min' for main.css file
+        }))
+        .pipe(plumber(notify.onError({
+            title: "Styles",
+            message: "Error: <%= error.message %>"
+            })))
         .pipe(rename({
             suffix: '.min'
         }))
@@ -34,22 +41,22 @@ const styles = () =>    {
         .pipe(cleanCSS({
             level: 2
         }))
-        .pipe(dest('./build/css/'))
+        .pipe(dest(`${build}/css/`))
         .pipe(browserSync.stream())
 }
 
 const htmlInclude = () => {
-    return src(['./src/index.html'])
+    return src([`${source}/index.html`])
         .pipe(fileInclude({
             prefix: '@',
             basepath:'@file'
         }))
-        .pipe(dest('./build'))
+        .pipe(dest(`${build}`))
         .pipe(browserSync.stream())
 }
 
 const scriptsLoader = () => {
-    return src('./src/js/main.js')
+    return src(`${source}/js/main.js`)
         .pipe(webpackStream({
             output: {
                 filename: 'main.js'
@@ -72,32 +79,36 @@ const scriptsLoader = () => {
             }
         }))
         .pipe(sourcemaps.init())
-        .pipe(uglify().on('error', notify.onError()))
+        .pipe(uglify().pipe(plumber(notify.onError({
+            title: "JS",
+            message: "Error: <%= error.message %>"
+        }))))
         .pipe(sourcemaps.write('.'))
         .pipe(dest('./build/js'))
         .pipe(browserSync.stream())
 }
+
 const imgToBuild = () => {
     return src(pathImages)
-        .pipe(dest('./build/img'))
+        .pipe(dest(`${build}/img`))
 }
 
 const assetsToBuild = () => {
-    return src('./src/assets/**')
-        .pipe(dest('./build/assets'))
+    return src(`${source}/assets/**`)
+        .pipe(dest(`${build}/assets`))
 }
 
 const fonts = () => {
-  src('./src/fonts/**.ttf')
+  src(`${source}/fonts/**.ttf`)
       .pipe(ttf2woff())
-      .pipe(dest('./build/fonts'))
-    return src('./src/fonts/**.ttf')
+      .pipe(dest(`${build}/fonts`))
+    return src(`${source}/fonts/**.ttf`)
         .pipe(ttf2woff2())
-        .pipe(dest('./build/fonts'))
+        .pipe(dest(`${build}/fonts`))
 }
 
 const svgToSprites = () => {
-  return src('./src/img/**.svg')
+  return src(`${source}/img/**.svg`)
       .pipe(svgSprite({
           mode: {
               stack: {
@@ -105,26 +116,24 @@ const svgToSprites = () => {
               }
           },
       }))
-      .pipe(dest('./build/img'))
+      .pipe(dest(`${build}/img`))
 }
 
-const cleaner = () => del(['build/*']);
+const cleaner = () => del([`${build}/*`]);
 
 const watcher = () => {
     browserSync.init({
         server: {
-            baseDir: './build'
+            baseDir: `${build}`
         }
     })
 
-    watch('./src/scss/**/*.scss', styles);
-    watch('./src/index.html', htmlInclude);
+    watch(`${source}/scss/**/*.scss`, styles);
+    watch(`${source}/index.html`, htmlInclude);
     watch(pathImages, imgToBuild);
-    watch('./src/img/**.svg', svgToSprites);
-    watch('./src/assets/**', assetsToBuild);
-    watch('./src/js/**/*.js', scriptsLoader);
+    watch(`${source}/img/**.svg`, svgToSprites);
+    watch(`${source}/assets/**`, assetsToBuild);
+    watch(`${source}/js/**/*.js`, scriptsLoader);
 }
 
-exports.watcher = watcher;
-exports.styles = styles;
 exports.default = series(cleaner, parallel(htmlInclude, scriptsLoader, fonts, imgToBuild, svgToSprites, assetsToBuild), styles, watcher)
