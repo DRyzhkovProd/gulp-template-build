@@ -12,6 +12,9 @@
   "author": "dryzhkov",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
+    "babel-loader": "^8.2.5",
     "browser-sync": "^2.27.9",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^8.0.0",
@@ -22,12 +25,17 @@
     "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-svg-sprite": "^1.5.0",
+    "gulp-uglify": "^3.0.2",
     "sass": "^1.50.1",
     "ttf2woff": "^3.0.0",
-    "ttf2woff2": "^4.0.5"
+    "ttf2woff2": "^4.0.5",
+    "webpack": "^5.72.0",
+    "webpack-stream": "^7.0.0"
   },
   "dependencies": {
+    "del": "^6.0.0",
     "gulp-ttf2woff": "^1.1.1",
-    "gulp-ttf2woff2": "^4.0.1"
+    "gulp-ttf2woff2": "^4.0.1",
+    "gulp-uglify-es": "^3.0.0"
   }
 }
