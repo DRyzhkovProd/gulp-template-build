@@ -4,8 +4,8 @@
   "description": "gulp build for web-layout",
   "main": "index.js",
   "scripts": {
-    "dev": "gulp",
-    "build": "gulp build"
+    "dev": "cross-env NODE_ENV=development gulp",
+    "prod": "NODE_ENV=production gulp build"
   },
   "keywords": [
     "gulp"
@@ -17,6 +17,7 @@
     "@babel/preset-env": "^7.17.10",
     "babel-loader": "^8.2.5",
     "browser-sync": "^2.27.9",
+    "cross-env": "^7.0.3",
     "del": "^6.0.0",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^8.0.0",
